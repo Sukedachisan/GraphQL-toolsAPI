@@ -53,38 +53,31 @@
 - FAX番号形式の検証 (10-11桁)
 - メールアドレス形式の検証
 - 税率（%）形式の検証（1-2桁）
-
-
-
-
-
-
-
-
+- 請求書番号の検証（'os' + 8桁の数字の連番）
+- 請求書登録番号の検証（'T' + 13桁の数字）
 ## 3. データモデル
-
 ### 3.1 Invoice (請求書)
 - 必須項目:
-  - id (UUID)
-  - invoice_number (自動採番)
-  - due_date (期日)
-  - created_at (作成日, JST)
-  - client_name (顧客名)
-  - total (合計金額, 自動計算)
-  - pdf_url (PDF保存URL)
-  - description (請求項目との関連)
-  - company_id (会社情報との関連)
-
+    - id (UUID)
+    - invoice_number (自動採番)
+    - due_date (期日)
+    - created_at (作成日, JST)
+    - client_name (顧客名)
+    - total (合計金額, 自動計算)
+    - pdf_url (PDF保存URL)
+    - description (請求項目との関連)
+    - company_id (会社情報との関連)
 ### 3.2 InvoiceItem (請求項目)
 - 必須項目:
-  - id (UUID)
-  - item_name (項目名)
-  - unit_price (単価)
-  - quantity (数量)
-  - tax_rate (税率, デフォルト10%)
-  - amount (金額, 自動計算)
-  - invoice_id (請求書との関連)
-
+    - id (UUID)
+    - item_name (項目名)
+    - unit_price (単価)
+    - quantity (数量)
+    - tax_rate (税率, デフォルト10%)
+    - amount (金額, 自動計算)
+    - invoice_id (請求書との関連)
+- オプション項目:
+    - remarks（備考）
 ### 3.3 Company (会社情報)
 - 必須項目:
   - id (UUID)
@@ -108,14 +101,13 @@
 
 ### 3.4 BankAccount (銀行口座情報)
 - 必須項目:
-  - id (UUID)
-  - bank_name (銀行名)
-  - branch_name (支店名)
-  - account_type (口座種別: 普通/当座)
-  - account_number (口座番号)
-  - account_holder (口座名義)
-  - holder_id (会社との関連)
-
+    - id (UUID)
+    - bank_name (銀行名)
+    - branch_name (支店名)
+    - account_type (口座種別: 普通/当座)
+    - account_number (口座番号)
+    - account_holder (口座名義)
+    - holder_id (会社との関連)
 ## 4. 非機能要件
 
 ### 4.1 パフォーマンス要件
