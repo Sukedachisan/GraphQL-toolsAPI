@@ -14,11 +14,8 @@
   - asyncpg 0.30.0
   - pydantic 2.9.2
   - uvicorn[standard] 0.32.0
-  reportlab==4.1.0  # PDF生成の標準ライブラリ
-
-2. バリデーション強化用：
-```
-email-validator==2.1.1  # メールアドレス検証
+  - reportlab==4.1.0
+   email-validator==2.1.1  # メールアドレス検証
 python-dateutil==2.9.0  # 日付処理
 ```
 
