@@ -14,7 +14,7 @@
     - 要件定義書
     - 画面フロー図 (mermaid)
     - ソースコード
-    - エンティティー関係図
+    - モデル間の関係図
     - プロジェクトのディレクトリ構造
 - ソースコードは常に完全なコードを生成して下さい。ソースコード更新において一部分だけを生成するのは禁止です。
 - 生成したソースコードは必ずパス・ファイル名を書いてください。
@@ -153,7 +153,7 @@ api/
     - business_name:
     - business_name_kana: *Validation(kana)
     - business_hp: *Validation(url)
-    - business_sns_links: *Validation(url)
+    - business_sns_links: *List[url] *Validation(List_item: url)
     - bank_account: *Relation(bank_account)
     - invoice: *Relation(invoice)
 
@@ -161,7 +161,7 @@ api/
     - id: *Required *Dafault_value(uuid)
     - bank_name: *Required
     - branch_name: *Required
-    - account_type: *Required *Validation(account_type: enum['普通口座', '当座'])
+    - account_type: *Required *Enum['普通口座', '当座']
     - account_number: *Required
     - account_holder: *Required
     - holder_id: *Required *Relation(company)
