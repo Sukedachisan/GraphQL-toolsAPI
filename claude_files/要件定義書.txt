@@ -59,7 +59,7 @@
 ### 3.1 Invoice (請求書)
 - 必須項目:
     - id (UUID)
-    - invoice_number (自動採番)
+    - invoice_number (請求書番号, 自動採番)
     - due_date (期日)
     - created_at (作成日, JST)
     - client_name (顧客名)
