@@ -1,1 +1,36 @@
-
+flowchart TB
+    Client([クライアント])
+    
+    subgraph GraphQL["GraphQL API Layer"]
+        Query[Query処理]
+        Mutation[Mutation処理]
+        Validation[バリデーション]
+    end
+    
+    subgraph Service["Service Layer"]
+        InvoiceService[請求書サービス]
+        PDFService[PDF生成サービス]
+    end
+    
+    subgraph Storage["Storage Layer"]
+        DB[(Aivenデータベース)]
+        PDFStorage[(PDFストレージ)]
+    end
+    
+    Client -->|GraphQLリクエスト| GraphQL
+    
+    Query --> Validation
+    Mutation --> Validation
+    
+    Validation -->|Valid| InvoiceService
+    Validation -->|Invalid| Client
+    
+    InvoiceService -->|PDF生成要求| PDFService
+    PDFService -->|PDF保存| PDFStorage
+    PDFService -->|URL返却| InvoiceService
+    
+    InvoiceService -->|データ保存| DB
+    InvoiceService -->|レスポンス| Client
+    
+    DB -->|データ取得| InvoiceService
+    PDFStorage -->|PDF取得| PDFService
