@@ -1,1 +1,279 @@
+# 請求書管理システム 要件定義
 
+## 1. システム概要
+### 1.1 目的
+- PDF形式の請求書を作成・管理するためのGraphQL APIシステムを構築する
+- 請求書データの効率的な作成、保存、取得を可能にする
+### 1.2 システム構成
+- バックエンド: Python 3.12 + FastAPI + Strawberry-GraphQL
+- データベース: Aiven (PostgreSQL)
+- 主要ライブラリ:
+  - FastAPI 0.115.5
+  - Strawberry-GraphQL[FastAPI] 0.248.1
+  - SQLalchemy 2.0.36
+  - asyncpg 0.30.0
+  - pydantic 2.9.2
+  - uvicorn[standard] 0.32.0
+
+
+
+
+
+
+
+
+
+ 承知いたしました。新しいプロンプトに基づいて、まずはモデル間の関係図とシステムフロー図を作成させていただきます。
+
+<antArtifact identifier="entity-relationship" type="application/vnd.ant.mermaid" title="モデル間の関係図">
+erDiagram
+    Invoice ||--o{ InvoiceItem : "has"
+    Invoice }|--|| Company : "belongs_to"
+    Company ||--o{ BankAccount : "has"
+    Company ||--o{ Invoice : "has"
+
+    Invoice {
+        uuid id PK
+        int invoice_number
+        date due_date
+        date created_at
+        string client_name
+        decimal total
+        string pdf_url
+        uuid company_id FK
+    }
+
+    InvoiceItem {
+        uuid id PK
+        string item_name
+        decimal unit_price
+        int quantity
+        int tax_rate
+        decimal amount
+        string remarks
+        uuid invoice_id FK
+    }
+
+    Company {
+        uuid id PK
+        string name
+        string name_kana
+        string postal_code
+        string address
+        string building_name
+        string room_number
+        string phone
+        string fax
+        string mail
+        string hp
+        string president
+        string company_seal
+        string invoice_registration_number
+        string business_name
+        string business_name_kana
+        string business_hp
+        string[] business_sns_links
+    }
+
+    BankAccount {
+        uuid id PK
+        string bank_name
+        string branch_name
+        enum account_type
+        string account_number
+        string account_holder
+        uuid holder_id FK
+    }
+</antArtifact>
+
+<antArtifact identifier="system-flow" type="application/vnd.ant.mermaid" title="システムフロー図">
+flowchart TB
+    Client([クライアント])
+    
+    subgraph GraphQL["GraphQL API Layer"]
+        Query[Query処理]
+        Mutation[Mutation処理]
+        Validation[バリデーション]
+    end
+    
+    subgraph Service["Service Layer"]
+        InvoiceService[請求書サービス]
+        PDFService[PDF生成サービス]
+    end
+    
+    subgraph Storage["Storage Layer"]
+        DB[(Aivenデータベース)]
+        PDFStorage[(PDFストレージ)]
+    end
+    
+    Client -->|GraphQLリクエスト| GraphQL
+    
+    Query --> Validation
+    Mutation --> Validation
+    
+    Validation -->|Valid| InvoiceService
+    Validation -->|Invalid| Client
+    
+    InvoiceService -->|PDF生成要求| PDFService
+    PDFService -->|PDF保存| PDFStorage
+    PDFService -->|URL返却| InvoiceService
+    
+    InvoiceService -->|データ保存| DB
+    InvoiceService -->|レスポンス| Client
+    
+    DB -->|データ取得| InvoiceService
+    PDFStorage -->|PDF取得| PDFService
+</antArtifact>
+
+追加のライブラリとして以下を提案させていただきます：
+
+1. PDF生成用：
+```
+reportlab==4.1.0  # PDF生成の標準ライブラリ
+```
+
+2. バリデーション強化用：
+```
+email-validator==2.1.1  # メールアドレス検証
+python-dateutil==2.9.0  # 日付処理
+```
+
+3. ストレージ用：
+```
+python-multipart==0.0.9  # ファイルアップロード処理
+boto3==1.34.69  # S3互換ストレージ操作用（オプショナル）
+```
+
+続いてソースコードの実装に移りたいのですが、以下の点について確認させてください：
+
+1. PDFの保存先（ストレージ）について：
+   - ローカルファイルシステムでよいでしょうか？
+   - または、S3等のクラウドストレージを使用する必要がありますか？
+
+2. Aivenの接続情報について：
+   - 接続情報（ホスト名、ポート番号、データベース名等）は環境変数で提供される想定でよろしいでしょうか？
+
+これらの情報をいただけましたら、ソースコードの実装に進めさせていただきます。
+
+
+
+
+
+
+
+
+
+
+## 2. 機能要件
+### 2.1 請求書作成機能
+1. 請求書作成フロー
+   - 必要項目の受け取り (Mutation)
+   - 請求書作成処理の実行
+   - PDF生成と保存
+   - データベースへの登録
+   - invoice_itemテーブルのクリーンアップ
+2. データ取得機能
+   - 一覧取得 (Query)
+   - 個別情報取得 (Query)
+   - ページネーション対応
+   - 検索・フィルタリング機能
+   - ソート機能
+### 2.2 検索・フィルタリング要件
+- 検索対象フィールド
+  - 顧客名（請求先）
+  - 作成日
+  - 支払期日
+  - 会社名
+  - 会社名カナ
+
+- ソート対象フィールド
+  - 作成日
+  - 支払期日
+
+### 2.3 データ検証要件
+- 日付形式の検証
+- 金額形式の検証 (JPY)
+- URL形式の検証
+- カタカナ形式の検証
+- 郵便番号形式の検証 (7桁)
+- 電話番号形式の検証 (10-11桁)
+- FAX番号形式の検証 (10-11桁)
+- メールアドレス形式の検証
+- URL形式の検証
+
+## 3. データモデル
+
+### 3.1 Invoice (請求書)
+- 必須項目:
+  - id (UUID)
+  - invoice_number (自動採番)
+  - due_date (期日)
+  - created_at (作成日, JST)
+  - client_name (顧客名)
+  - total (合計金額, 自動計算)
+  - pdf_url (PDF保存URL)
+  - description (請求項目との関連)
+  - company_id (会社情報との関連)
+
+### 3.2 InvoiceItem (請求項目)
+- 必須項目:
+  - id (UUID)
+  - item_name (項目名)
+  - unit_price (単価)
+  - quantity (数量)
+  - tax_rate (税率, デフォルト10%)
+  - amount (金額, 自動計算)
+  - invoice_id (請求書との関連)
+
+### 3.3 Company (会社情報)
+- 必須項目:
+  - id (UUID)
+  - name (会社名)
+  - name_kana (会社名カナ)
+  - postal_code (郵便番号)
+  - address (住所)
+  - phone (電話番号)
+  - president (代表者名)
+- オプション項目:
+  - building_name (建物名)
+  - room_number (部屋番号)
+  - fax (FAX番号)
+  - mail (メールアドレス)
+  - hp (ホームページURL)
+  - company_seal (印鑑画像URL)
+  - business_name (事業名)
+  - business_name_kana (事業名カナ)
+  - business_hp (事業用HP)
+  - business_sns_links (SNSリンク)
+
+### 3.4 BankAccount (銀行口座情報)
+- 必須項目:
+  - id (UUID)
+  - bank_name (銀行名)
+  - branch_name (支店名)
+  - account_type (口座種別: 普通/当座)
+  - account_number (口座番号)
+  - account_holder (口座名義)
+  - holder_id (会社との関連)
+
+## 4. 非機能要件
+
+### 4.1 パフォーマンス要件
+- 非同期処理の実装
+- 効率的なデータベースクエリの実装
+- ページネーションによる大量データの効率的な取得
+
+### 4.2 セキュリティ要件
+- 入力値の適切なバリデーション
+- SQLインジェクション対策
+- クロスサイトスクリプティング対策
+
+### 4.3 エラーハンドリング
+- 適切なエラーメッセージの提供
+- エラーログの記録
+- 例外処理の実装
+
+## 5. 拡張性要件
+- モジュラーな設計
+- 設定の外部化
+- コードの再利用性の確保
