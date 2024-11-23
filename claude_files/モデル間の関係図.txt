@@ -1,1 +1,58 @@
+erDiagram
+    Invoice ||--o{ InvoiceItem : "has"
+    Invoice }|--|| Company : "belongs_to"
+    Company ||--o{ BankAccount : "has"
+    Company ||--o{ Invoice : "has"
 
+    Invoice {
+        uuid id PK
+        int invoice_number
+        date due_date
+        date created_at
+        string client_name
+        decimal total
+        string pdf_url
+        uuid company_id FK
+    }
+
+    InvoiceItem {
+        uuid id PK
+        string item_name
+        decimal unit_price
+        int quantity
+        int tax_rate
+        decimal amount
+        string remarks
+        uuid invoice_id FK
+    }
+
+    Company {
+        uuid id PK
+        string name
+        string name_kana
+        string postal_code
+        string address
+        string building_name
+        string room_number
+        string phone
+        string fax
+        string mail
+        string hp
+        string president
+        string company_seal
+        string invoice_registration_number
+        string business_name
+        string business_name_kana
+        string business_hp
+        string[] business_sns_links
+    }
+
+    BankAccount {
+        uuid id PK
+        string bank_name
+        string branch_name
+        enum account_type
+        string account_number
+        string account_holder
+        uuid holder_id FK
+    }
