@@ -35,18 +35,6 @@
 - 'モデル定義'に沿ってコードを生成
 """
 
-###コードの技術要件:
-"""
-- Python3.12 で構築
-- 使用するライブラリ
-    - FastAPI == 0.115.5
-    - Strawberry-GraphQL[FastAPI] == 0.248.1
-    - SQLalchemy == 2.0.36
-    - asyncpg == 0.30.0
-    - pydantic == 2.9.2
-    - uvicorn[standard] == 0.32.0
-"""
-
 ###APIの仕様要件:
 """
 - PDF形式の請求書を作成する API を GraphQL で構築
