@@ -1,36 +1,33 @@
 flowchart TB
-    Client([クライアント])
+    Start([開始]) --> Query{クエリ種別}
+    Query -->|Mutation| CreateInvoice[請求書作成]
+    Query -->|Query| GetInvoices[請求書取得]
     
-    subgraph GraphQL["GraphQL API Layer"]
-        Query[Query処理]
-        Mutation[Mutation処理]
-        Validation[バリデーション]
-    end
+    CreateInvoice --> ValidateInput[入力値検証]
+    ValidateInput -->|検証OK| CreatePDF[PDF生成]
+    ValidateInput -->|検証エラー| ReturnError1[エラー返却]
     
-    subgraph Service["Service Layer"]
-        InvoiceService[請求書サービス]
-        PDFService[PDF生成サービス]
-    end
+    CreatePDF --> SavePDF[PDFの保存]
+    SavePDF --> SaveDB[データベース保存]
+    SaveDB --> CleanupItems[invoice_itemsクリーンアップ]
+    CleanupItems --> ReturnResult1[結果返却]
     
-    subgraph Storage["Storage Layer"]
-        DB[(Aivenデータベース)]
-        PDFStorage[(PDFストレージ)]
-    end
+    GetInvoices --> FilterParams{パラメータ指定}
+    FilterParams -->|一覧取得| ListInvoices[請求書一覧取得]
+    FilterParams -->|個別取得| GetInvoice[請求書個別取得]
     
-    Client -->|GraphQLリクエスト| GraphQL
+    ListInvoices --> ApplyFilters[フィルター適用]
+    ApplyFilters --> ApplySort[ソート適用]
+    ApplySort --> ApplyPagination[ページネーション適用]
+    ApplyPagination --> ReturnResult2[結果返却]
     
-    Query --> Validation
-    Mutation --> Validation
+    GetInvoice --> ValidateId[ID検証]
+    ValidateId -->|検証OK| FetchInvoice[請求書データ取得]
+    ValidateId -->|検証エラー| ReturnError2[エラー返却]
+    FetchInvoice --> ReturnResult3[結果返却]
     
-    Validation -->|Valid| InvoiceService
-    Validation -->|Invalid| Client
-    
-    InvoiceService -->|PDF生成要求| PDFService
-    PDFService -->|PDF保存| PDFStorage
-    PDFService -->|URL返却| InvoiceService
-    
-    InvoiceService -->|データ保存| DB
-    InvoiceService -->|レスポンス| Client
-    
-    DB -->|データ取得| InvoiceService
-    PDFStorage -->|PDF取得| PDFService
+    ReturnError1 --> End([終了])
+    ReturnError2 --> End
+    ReturnResult1 --> End
+    ReturnResult2 --> End
+    ReturnResult3 --> End
