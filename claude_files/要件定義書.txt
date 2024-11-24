@@ -65,7 +65,6 @@
     - client_name (顧客名)
     - total (合計金額, 自動計算)
     - pdf_url (PDF保存URL)
-    - description (請求項目との関連)
     - company_id (会社情報との関連)
 ### 3.2 InvoiceItem (請求項目)
 - 必須項目:
