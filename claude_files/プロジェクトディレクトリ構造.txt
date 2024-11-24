@@ -1,0 +1,39 @@
+# プロジェクトディレクトリ構造
+
+api/
+│
+├── app/
+│ ├── __init__.py
+│ ├── main.py # FastAPIアプリケーションのエントリーポイント
+│ ├── core/
+│ │ ├── __init__.py
+│ │ ├── config.py # 設定
+│ │ └── database.py # データベース接続
+│ ├── models/
+│ │ ├── __init__.py
+│ │ ├── invoice.py # インボイスモデル
+│ │ ├── invoice_item.py # インボイス項目モデル
+│ │ ├── company.py # 会社モデル
+│ │ └── bank_account.py # 銀行口座モデル
+│ ├── schemas/
+│ │ ├── __init__.py
+│ │ ├── invoice.py # インボイススキーマ
+│ │ ├── invoice_item.py # インボイス項目スキーマ
+│ │ ├── company.py # 会社スキーマ
+│ │ └── bank_account.py # 銀行口座スキーマ
+│ ├── graphql/
+│ │ ├── __init__.py
+│ │ ├── types/ # GraphQLタイプ定義
+│ │ ├── queries/ # クエリ定義
+│ │ └── mutations/ # ミューテーション定義
+│ ├── services/
+│ │ ├── __init__.py
+│ │ ├── pdf.py # PDF生成サービス
+│ │ └── invoice.py # インボイスサービス
+│ └── utils/
+│ ├── __init__.py
+│ └── validators.py # カスタムバリデーター
+│
+├── tests/ # テストファイル
+├── .gitignore
+└── requirements.txt # 依存関係
