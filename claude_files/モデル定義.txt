@@ -1,5 +1,4 @@
 # モデル定義
-"""
 - table_name: invoice
     - id: *Required *Dafault_value(uuid)
     - invoice_number: *Required *Autoincrement
@@ -51,4 +50,3 @@
     - account_number: *Required
     - account_holder: *Required
     - holder_id: *Required *Relation(company)
-"""
