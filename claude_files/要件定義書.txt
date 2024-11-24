@@ -93,6 +93,7 @@
     - mail (メールアドレス)
     - hp (ホームページURL)
     - company_seal (印鑑画像URL)
+    - invoice_registration_number (請求書登録者番号)
     - business_name (事業名)
     - business_name_kana (事業名カナ)
     - business_hp (事業用HP)
