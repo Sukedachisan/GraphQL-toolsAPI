@@ -1,4 +1,4 @@
-###モデル定義
+# モデル定義
 """
 - table_name: invoice
     - id: *Required *Dafault_value(uuid)
