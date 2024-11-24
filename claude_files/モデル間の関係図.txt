@@ -1,12 +1,11 @@
 erDiagram
-    Invoice ||--o{ InvoiceItem : "has"
-    Invoice }|--|| Company : "belongs_to"
-    Company ||--o{ BankAccount : "has"
-    Company ||--o{ Invoice : "has"
-
+    Invoice ||--|{ InvoiceItem : contains
+    Invoice }|--|| Company : belongs_to
+    Company ||--|{ BankAccount : has
+    
     Invoice {
         uuid id PK
-        int invoice_number
+        string invoice_number
         date due_date
         date created_at
         string client_name
@@ -19,8 +18,8 @@ erDiagram
         uuid id PK
         string item_name
         decimal unit_price
-        int quantity
-        int tax_rate
+        integer quantity
+        integer tax_rate
         decimal amount
         string remarks
         uuid invoice_id FK
