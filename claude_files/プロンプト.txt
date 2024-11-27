@@ -38,3 +38,24 @@
 xml
 検証は最低3回
 フィードバックループを3回繰り返し、洗練された解決策を形成します。
+
+  "thought": "連鎖的思考（Chain-of-Thought, CoT）によって、LLMが直接答えを出力するのではなく、考える過程を一歩一歩進めることで、複雑な問題解決を可能にします。この手法により、モデルはより深い理解を必要とするタスクに対応し、その決定過程を理解することができます。",
+    "name": "Chain-of-Thought",
+    "code": """def forward(self, taskInfo):
+    # Chain-of-Thought (CoT) アプローチのための指示
+    # これは、LLMがタスクを解く前に考える過程を持つことを可能にする重要な手法です。
+    cot_instruction = "ステップバイステップで考え、タスクを解いてください。"
+
+    # CoT 専用の新しい LLM エージェントをインスタンス化
+    # LLM が答える前に考える過程を持たせるには、追加の出力フィールド 'thinking' を設定する必要があります。
+    cot_agent = LLMAgentBase(['thinking', 'answer'], 'Chain-of-Thought Agent')
+
+    # CoT エージェントの入力を準備
+    # 入力は Info のリストであり、最初の要素は通常 taskInfo です
+    cot_agent_inputs = [taskInfo]
+
+    # CoT エージェントからの応答を取得
+    thinking, answer = cot_agent(cot_agent_inputs, cot_instruction)
+
+    # 最終的な答えのみを返す
+    return answer
